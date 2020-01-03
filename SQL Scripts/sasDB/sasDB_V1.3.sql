@@ -110,7 +110,7 @@ CREATE TABLE LocationAddress (
   LaneAddress VARCHAR(150),
   laLocationID CHAR(8),
   PRIMARY KEY (LocationAddressID),
-  FOREIGN KEY (laLocationID) REFERENCES LocationArea(LocationAreaID)
+  CONSTRAINT FK_LA_LocationAddressID FOREIGN KEY (laLocationID) REFERENCES LocationArea(LocationAreaID)
 )
 
 GO
@@ -132,8 +132,8 @@ CREATE TABLE StudentContact(
   ladLocationAddressID CHAR(8) NOT NULL,
   PRIMARY KEY (NationalInsuranceNumber),
   CONSTRAINT CHK_TelephoneNumber CHECK (TelephoneNumber LIKE '[0-9][0-9][0-9][0-9][.-][0-9][0-9][0-9][0-9][0-9][0-9]'),
-  FOREIGN KEY (ladLocationAddressID) REFERENCES LocationAddress(LocationAddressID),
-  FOREIGN KEY (stStudentTypeID) REFERENCES StudentType(StudentTypeID)
+  CONSTRAINT FK_SC_LocationAddressID FOREIGN KEY (ladLocationAddressID) REFERENCES LocationAddress(LocationAddressID),
+  CONSTRAINT FK_SC_stStudentTypeID FOREIGN KEY (stStudentTypeID) REFERENCES StudentType(StudentTypeID)
 )
 
 GO
@@ -164,7 +164,7 @@ CREATE TABLE StudentMobileNumber(
   MobileNumber CHAR(11) NOT NULL UNIQUE, -- advise user to insert in regional format 0123-456789
   PRIMARY KEY (scNationalInsuranceNumber),
   CONSTRAINT CHK_TelephoneNumber CHECK (MObileNumber LIKE '[0-9][0-9][0-9][0-9][.-][0-9][0-9][0-9][0-9][0-9][0-9]'),
-  FOREIGN KEY (scNationalInsuranceNumber) REFERENCES StudentContact(NationalInsuranceNumber)
+  CONSTRAINT FK_SMN_scNationalInsuranceNumber FOREIGN KEY (scNationalInsuranceNumber) REFERENCES StudentContact(NationalInsuranceNumber)
 )
 
 GO
@@ -230,7 +230,7 @@ CREATE TABLE UniversityContact(
   Name VARCHAR(100) NOT NULL,
   ladLocationAddressID CHAR(8) NOT NULL,
   PRIMARY KEY (UniversityID),
-  FOREIGN KEY (ladLocationAddressID) REFERENCES LocationAddress(LocationAddressID),
+  CONSTRAINT FK_UC_ladLocationAddressID FOREIGN KEY (ladLocationAddressID) REFERENCES LocationAddress(LocationAddressID)
 )
 
 GO
@@ -249,7 +249,7 @@ CREATE TABLE UniversityTelephoneNumber(
   ucUniversityID VARCHAR(4),
   TelephoneNumber CHAR(11) NOT NULL UNIQUE, -- advise user to insert in regional format 0123-456789
   PRIMARY KEY (ucUniversityID,TelephoneNumber),
-  FOREIGN KEY (ucUniversityID) REFERENCES UniversityContact(UniversityID),
+  CONSTRAINT FK_UTN_ucUniversityID FOREIGN KEY (ucUniversityID) REFERENCES UniversityContact(UniversityID),
   CONSTRAINT CHK_TelephoneNumber CHECK (TelephoneNumber LIKE '[0-9][0-9][0-9][0-9][.-][0-9][0-9][0-9][0-9][0-9][0-9]')
 )
 
