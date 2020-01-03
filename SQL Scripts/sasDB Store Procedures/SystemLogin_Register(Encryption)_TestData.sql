@@ -3,8 +3,9 @@
 DECLARE @ServerFeedback VARCHAR(300)
 
 EXEC dbo.spSystemRegister		--INSERTING VALUES
-          @UserName = 'Robert',
-          @Password = 'rob123',
+          @UserName = 'Ranul',
+          @Password = 'test',
+		  @EmailAddress = 'email',
           @ServerFeedback=@ServerFeedback OUTPUT
 
 SELECT * FROM [dbo].[SystemLogin]

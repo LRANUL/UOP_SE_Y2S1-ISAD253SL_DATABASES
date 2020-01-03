@@ -1,5 +1,6 @@
--- Creating a new database, named sasDB (Student Accommodation Service Database)
-CREATE DATABASE sasDB
+
+-- Accessing the sasDB
+USE sasDB;
 
 GO
 
@@ -130,7 +131,9 @@ CREATE TABLE StudentContact(
   stStudentTypeID CHAR(8),
   TelephoneNumber CHAR(11) NOT NULL UNIQUE, -- advise user to insert in regional format 0123-456789
   ladLocationAddressID CHAR(8) NOT NULL,
+  EmailAddress VARCHAR(50) NOT NULL,
   PRIMARY KEY (NationalInsuranceNumber),
+  CONSTRAINT CHK_EmailAddress CHECK (EmailAddress LIKE '%_@_%_.__%'), -- check for @ sign and subdomains such as .co.uk
   CONSTRAINT CHK_TelephoneNumber CHECK (TelephoneNumber LIKE '[0-9][0-9][0-9][0-9][.-][0-9][0-9][0-9][0-9][0-9][0-9]'),
   CONSTRAINT FK_SC_LocationAddressID FOREIGN KEY (ladLocationAddressID) REFERENCES LocationAddress(LocationAddressID),
   CONSTRAINT FK_SC_stStudentTypeID FOREIGN KEY (stStudentTypeID) REFERENCES StudentType(StudentTypeID)
@@ -203,6 +206,7 @@ GO
 INSERT INTO MembershipStatus (MembershipStatus) VALUES
 ('Active'),  -- MembershipStatusID: MS000001
 ('Dormant')  -- MembershipStatusID: MS000002
+('Banned')  -- MembershipStatusID: MS000002
 
 GO
 
@@ -289,8 +293,7 @@ CREATE TABLE PropertyType(
   PTRecordID int IDENTITY(1,1),
   PropertyTypeID AS CAST('PT' + RIGHT('000000' + CAST(PropertyTypeID AS VARCHAR(6)), 6) AS CHAR(8)) PERSISTED,
   PropertyType varchar(30) NOT NULL,
-  PRIMARY KEY (PropertyTypeID, PTRecordID),
-  
+  PRIMARY KEY (PropertyTypeID, PTRecordID)
 )
 
 GO
@@ -349,8 +352,7 @@ GO
 
 
 
---  MADRecordID INT IDENTITY(1,1),
---  MembershipStatusID AS CAST('MS' + RIGHT('000000' + CAST(MADRecordID AS VARCHAR(6)), 6) AS CHAR(8)) PERSISTED,
+
 
 -- CREATING TABLE 15 -PropertyContact --
 CREATE TABLE PropertyContact(
@@ -364,17 +366,12 @@ CREATE TABLE PropertyContact(
 
 GO
 
-LADDRecordID INT IDENTITY(1,1),
-LocationAddressID AS CAST('LAD' + RIGHT('00000' + CAST(LADDRecordID AS VARCHAR(5)), 5) AS CHAR(8)) PERSISTED,
-
-in some places you would have to use this, there are 3 characters here
-
 -- CREATING TABLE 16 - Property --
 CREATE TABLE Property(
-  
+
   PRecordID int IDENTITY(1,1),
   PropertyID AS CAST('PP' + RIGHT('000000' + CAST(PRecordID AS VARCHAR(6)), 6) AS CHAR(8)) PERSISTED,
-  
+
   patPropertyAreaTypeID char(8),
   raRentAmountID char(8),
   MaxNoTenants int(3),
@@ -394,9 +391,6 @@ CREATE TABLE Property(
   CONSTRAINT CHK_P_RentAmountID CHECK (LEN(raRentAmountID) = 8),
   CONSTRAINT CHK_P_PropertyContactID CHECK (LEN(pcPropertyContactID) = 8)
 )
-
-
-
 
 GO
 -- CREATING TABLE 17 - PropertyOtherFacilities  --
@@ -420,8 +414,6 @@ CREATE TABLE PropertyFlatFloorNumber(
   FloorNumber varchar(2) NOT NULL,
   PRIMARY KEY (FloorNumberID, PFFNRecordID),
 )
-
-
 
 GO
 
@@ -452,7 +444,7 @@ CREATE TABLE PropertyFlat(
   CONSTRAINT CHK_PF_pPropertyID CHECK (LEN(pPropertyID) = 8),
   CONSTRAINT CHK_PF_pffFloorNoID CHECK (LEN(pffFloorNoID) = 8),
   CONSTRAINT CHK_PF_psStatusID CHECK (LEN(psStatusID) = 8),
-  
+
 )
 
 
@@ -521,13 +513,15 @@ CREATE TABLE SystemLogin(
 
 GO
 
--- ALTERING TABLE TO SUPPORT SALTING / POSSIBLE INCLUDE ATTRIBUTE IN IT
-ALTER TABLE dbo.[SystemLogin] ADD Cryptography UNIQUEIDENTIFIER 
+-- ALTERING TABLE TO SUPPORT SALTING / POSSIBLE INCLUDE ATTRIBUTE IN IT--
+ALTER TABLE dbo.[SystemLogin] ADD Cryptography UNIQUEIDENTIFIER
 
 GO
+
+
 -- CREATING STORED PROCEDURE spSystemRegister TO ENCRYPT PASSWORDS--
 CREATE PROCEDURE dbo.spSystemRegister
-@UserName VARCHAR(8), 
+@UserName VARCHAR(8),
 @Password VARCHAR(30),
 @ServerFeedback VARCHAR(300) OUTPUT
 AS
@@ -543,12 +537,16 @@ SET @ServerFeedback='Credentials Stored Securely.'
 
 END TRY
 BEGIN CATCH
-SET @ServerFeedback=ERROR_MESSAGE() 
+SET @ServerFeedback=ERROR_MESSAGE()
 END CATCH
 END
--- CREATING STORED PROCEDURE spSystemLogin TO READ AND VALIDATE ENCRYPTED PASSWORDS--
+
+
+
+
+-- CREATING STORED PROCEDURE spSystemLogin TO READ AND VALIDATE ENCRYPTED  --
 CREATE PROCEDURE dbo.spSystemLogin
-@UserName VARCHAR(8), 
+@UserName VARCHAR(8),
 @Password VARCHAR(30),
 @ServerFeedback VARCHAR(300)='' OUTPUT
 AS
@@ -564,7 +562,7 @@ SET @SLRecordID=(SELECT SLRecordID FROM [dbo].[SystemLogin] WHERE UserName=@User
 
 IF(@SLRecordID IS NULL)
 SET @ServerFeedback='INVALID CREDENTIALS, CHECK PASSWORD'
-ELSE 
+ELSE
 SET @ServerFeedback='Login Success...'
 END
 ELSE
@@ -573,6 +571,12 @@ SET @ServerFeedback='ACCOUNT NOT FOUND !'
 END
 -- TEST DATA FOR ENCRYPTIONS TESTS--
 -- SYSTEM LOGIN AND REGISTRATION ENCRYPTION TEST DATA
+
+
+
+
+
+
 
 DECLARE @ServerFeedback VARCHAR(300)
 
@@ -603,6 +607,14 @@ EXEC	dbo.spSystemLogin		--TESTING WITH FALSE PASSWORD
 @ServerFeedback=@ServerFeedback OUTPUT
 
 SELECT	@ServerFeedback as N'@ServerFeedback'
+
+
+
+
+
+
+
+
 
 -- CREATING TABLE 26 - systemLoginLoginDateTime  --
 CREATE TABLE SystemLoginLoginDateTime(
@@ -713,7 +725,6 @@ CREATE TABLE StudentEmergencyContact(
 
 GO
 
-
 -- CREATING TABLE 46 - CustomerService_VerifyStudentEnrollment  --
 CREATE TABLE CustomerService_VerifyStudentEnrollment(
   csEmployeeID_VerifiedBy char(8) Not Null,
@@ -722,13 +733,10 @@ CREATE TABLE CustomerService_VerifyStudentEnrollment(
   PRIMARY KEY (csEmployeeID_VerifiedBy,ucUniversityID),
   CONSTRAINT FK_CVSEU_UniversityID FOREIGN KEY (ucUniversityID) REFERENCES UniversityContact(UniversityID),
   CONSTRAINT FK_CVSEU_EmployeeID_VerifiedBy FOREIGN KEY (csEmployeeID_VerifiedBy) REFERENCES CustomerService(EmployeeID),
-  
+
 )
 
-
-
 Go
-
 
 -- CREATING TABLE 47 - RequestViewing --
 CREATE TABLE RequestViewing(
@@ -740,7 +748,7 @@ CREATE TABLE RequestViewing(
   CONSTRAINT FK_RV_NationalInsuranceNumbe FOREIGN KEY (scNationalInsuranceNumber_RequestedBy) REFERENCES LocationAddress(LocationAddressID),
   CONSTRAINT FK_RV_PropertyID FOREIGN KEY (pPropertyID) REFERENCES Property(PropertyID),
   CONSTRAINT FK_RV_EmployeeID FOREIGN KEY (csEmployeeID) REFERENCES CustomerService(EmployeeID)
-  
+
 )
 
 
