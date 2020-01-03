@@ -12,7 +12,7 @@ CREATE TABLE CustomerService (
   LastName VARCHAR(30) NOT NULL,
   EmailAddress VARCHAR(50) NOT NULL,
   TelephoneNumber CHAR(11) NOT NULL UNIQUE, -- advise user to insert in regional format 0123-456789
-  PRIMARY KEY (EmployeeID),
+  PRIMARY KEY (EmployeeID,CSRecordID),
   CONSTRAINT CHK_EmailAddress CHECK (EmailAddress LIKE '%_@_%_.__%'), -- check for @ sign and subdomains such as .co.uk
   CONSTRAINT CHK_TelephoneNumber CHECK (TelephoneNumber LIKE '[0-9][0-9][0-9][0-9][.-][0-9][0-9][0-9][0-9][0-9][0-9]')
 )
@@ -67,18 +67,18 @@ GO
 -- CREATING TABLE 2 - StudentType --
 CREATE TABLE StudentType(
   STRecordID INT IDENTITY(1,1),
-  StudentType VARCHAR(22) NOT NULL,
+  StudentType CHAR(2) NOT NULL,
   StudentTypeID AS CAST(CAST(StudentType AS VARCHAR(2)) + RIGHT('000000' + CAST(STRecordID AS VARCHAR(6)), 6) AS CHAR(8)) PERSISTED,
-  PRIMARY KEY (StudentTypeID),
-  CONSTRAINT CHK_StudentType CHECK (StudentType ='Undergraduate Student' OR StudentType ='Postgraduate Student')
+  PRIMARY KEY (StudentTypeID,STRecordID),
+  CONSTRAINT CHK_StudentType CHECK (StudentType ='UG' OR StudentType ='PG')
 )
 
 GO
 
 -- INSERTING DATA TO TABLE 2 - StudentType --
 INSERT INTO StudentType (StudentType) VALUES
-('Undergraduate Student'),
-('Postgraduate Student')
+('UG'), --Undergraduate Student
+('PG') --Postgraduate Student
 
 GO
 
@@ -86,10 +86,10 @@ GO
 CREATE TABLE LocationArea (
   LARecordID INT IDENTITY(1,1),
   LocationAreaID AS CAST('LA' + RIGHT('000000' + CAST(LARecordID AS VARCHAR(6)), 6) AS CHAR(8)) PERSISTED,
-  Zipcode VARCHAR(8),
-  City VARCHAR(58),
-  County VARCHAR(26),
-  PRIMARY KEY(LocationAreaID)
+  Zipcode VARCHAR(8) NOT NULL,
+  City VARCHAR(58) NOT NULL,
+  County VARCHAR(26) NOT NULL,
+  PRIMARY KEY(LocationAreaID,LARecordID)
 )
 
 GO
@@ -107,9 +107,9 @@ GO
 CREATE TABLE LocationAddress (
   LADDRecordID INT IDENTITY(1,1),
   LocationAddressID AS CAST('LAD' + RIGHT('00000' + CAST(LADDRecordID AS VARCHAR(5)), 5) AS CHAR(8)) PERSISTED,
-  LaneAddress VARCHAR(150),
+  LaneAddress VARCHAR(150) NOT NULL,
   laLocationID CHAR(8),
-  PRIMARY KEY (LocationAddressID),
+  PRIMARY KEY (LocationAddressID,LADDRecordID),
   CONSTRAINT FK_LA_LocationAddressID FOREIGN KEY (laLocationID) REFERENCES LocationArea(LocationAreaID)
 )
 
@@ -117,16 +117,16 @@ GO
 
 -- INSERTING DATA TO TABLE 4 - LocationAddress --
 INSERT INTO  LocationAddress (LaneAddress, laLocationID) VALUES
-('University Offices, Wellington Square','LD00001'),    -- LocationAddressID: LAD00001
-('University College London, Gower Street','LD00002'),  -- LocationAddressID: LAD00002
-('The Old Schools, Trinity Lane','LD00003'),            -- LocationAddressID: LAD00003
-('Drake Circus','LD00004')                              -- LocationAddressID: LAD00004
+('University Offices, Wellington Square','LAD00001'),    -- LocationAddressID: LAD00001
+('University College London, Gower Street','LAD00002'),  -- LocationAddressID: LAD00002
+('The Old Schools, Trinity Lane','LAD00003'),            -- LocationAddressID: LAD00003
+('Drake Circus','LAD00004')                              -- LocationAddressID: LAD00004
 
 GO
 
 -- CREATING TABLE 5 - StudentContact --
 CREATE TABLE StudentContact(
-  NationalInsuranceNumber VARCHAR(9),
+  NationalInsuranceNumber VARCHAR(9) NOT NULL,
   stStudentTypeID CHAR(8),
   TelephoneNumber CHAR(11) NOT NULL UNIQUE, -- advise user to insert in regional format 0123-456789
   ladLocationAddressID CHAR(8) NOT NULL,
@@ -160,10 +160,10 @@ GO
 
 -- CREATING TABLE 6 - StudentMobileNumber --
 CREATE TABLE StudentMobileNumber(
-  scNationalInsuranceNumber VARCHAR(9),
+  scNationalInsuranceNumber VARCHAR(9) NOT NULL,
   MobileNumber CHAR(11) NOT NULL UNIQUE, -- advise user to insert in regional format 0123-456789
-  PRIMARY KEY (scNationalInsuranceNumber),
-  CONSTRAINT CHK_TelephoneNumber CHECK (MObileNumber LIKE '[0-9][0-9][0-9][0-9][.-][0-9][0-9][0-9][0-9][0-9][0-9]'),
+  PRIMARY KEY (scNationalInsuranceNumber,MobileNumber),
+  CONSTRAINT CHK_TelephoneNumber CHECK (MobileNumber LIKE '[0-9][0-9][0-9][0-9][.-][0-9][0-9][0-9][0-9][0-9][0-9]'),
   CONSTRAINT FK_SMN_scNationalInsuranceNumber FOREIGN KEY (scNationalInsuranceNumber) REFERENCES StudentContact(NationalInsuranceNumber)
 )
 
@@ -193,9 +193,9 @@ GO
 CREATE TABLE MembershipStatus(
   MADRecordID INT IDENTITY(1,1),
   MembershipStatusID AS CAST('MS' + RIGHT('000000' + CAST(MADRecordID AS VARCHAR(6)), 6) AS CHAR(8)) PERSISTED,
-  MembershipStatus VARCHAR(20),
-  PRIMARY KEY (MembershipStatusID),
-  CONSTRAINT CHK_Status CHECK (MembershipStatus = 'Active' OR MembershipStatus ='Dormant') -- checks for only possible two account statuses
+  MembershipStatus VARCHAR(20) NOT NULL,
+  PRIMARY KEY (MembershipStatusID,MADRecordID),
+  CONSTRAINT CHK_Status CHECK (MembershipStatus = 'Active' OR MembershipStatus ='Dormant' OR MembershipStatus ='Banned') -- checks for only possible account statuses
 )
 
 GO
@@ -210,8 +210,8 @@ GO
 CREATE TABLE StudentGender(
   SGRecordID INT IDENTITY(1,1),
   GenderID AS CAST('SG' + RIGHT('000000' + CAST(SGRecordID AS VARCHAR(6)), 6) AS CHAR(8)) PERSISTED,
-  Gender CHAR(1),
-  PRIMARY KEY (GenderID),
+  Gender CHAR(1) NOT NULL,
+  PRIMARY KEY (GenderID ,SGRecordID),
   CONSTRAINT CHK_Gender CHECK (Gender = 'M' OR Gender = 'F') -- checks for correct gender input M(male),F(female)
 )
 
@@ -226,10 +226,10 @@ GO
 -- CREATING TABLE 9 - UniversityContact --
 CREATE TABLE UniversityContact(
   URecordID INT IDENTITY(1,1),
-  UniversityID VARCHAR(4),
+  UniversityID VARCHAR(4) NOT NULL,
   Name VARCHAR(100) NOT NULL,
   ladLocationAddressID CHAR(8) NOT NULL,
-  PRIMARY KEY (UniversityID),
+  PRIMARY KEY (UniversityID, URecordID),
   CONSTRAINT FK_UC_ladLocationAddressID FOREIGN KEY (ladLocationAddressID) REFERENCES LocationAddress(LocationAddressID)
 )
 
@@ -237,10 +237,10 @@ GO
 
 -- INSERTING DATA TO TABLE 9 - UniversityContact --
 INSERT INTO UniversityContact (UniversityID,Name,ladLocationAddressID) VALUES
-('OU','Univeristy of Oxford','LAD00001'),
-('UCL','Univeristy of College London','LAD00002'),
-('CAM','Univeristy of Cambridge','LAD00003'),
-('PU','Univeristy of Plymouth','LAD00004');
+('OU','University of Oxford','LAD00001'),
+('UCL','University of College London','LAD00002'),
+('CAM','University of Cambridge','LAD00003'),
+('PU','University of Plymouth','LAD00004');
 
 GO
 
