@@ -1,10 +1,10 @@
 -- SYSTEM LOGIN AND REGISTRATION ENCRYPTION TEST DATA
 
-DECLARE @ServerFeedback VARCHAR(300)
+DECLARE @ServerFeedback NVARCHAR(300)
 
 EXEC dbo.spSystemRegister		--INSERTING VALUES
           @UserName = 'Ranul',
-          @Password = 'test',
+          @Password = 'testing',
 		  @EmailAddress = 'email',
           @ServerFeedback=@ServerFeedback OUTPUT
 

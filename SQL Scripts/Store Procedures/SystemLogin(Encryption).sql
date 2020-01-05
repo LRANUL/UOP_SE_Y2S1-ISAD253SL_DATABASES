@@ -1,7 +1,7 @@
 CREATE PROCEDURE dbo.spSystemLogin
-      @UserName VARCHAR(8), 
-      @Password VARCHAR(30),
-      @ServerFeedback VARCHAR(300)='' OUTPUT
+      @UserName NVARCHAR(8), 
+      @Password NVARCHAR(30),
+      @ServerFeedback NVARCHAR(300)='' OUTPUT
 AS
 BEGIN
 
