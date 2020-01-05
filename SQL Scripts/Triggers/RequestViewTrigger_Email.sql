@@ -25,8 +25,8 @@ SELECT @csEmployeeID = ins.csEmployeeID FROM INSERTED ins;
 
 IF UPDATE(Sales)
 BEGIN
-		SET @CSEmailAddress = ( SELECT EmailAddress FROM CUSTOMER SERVICE WHERE EmployeeID = @csEmployeeID) ;
-		SET @CSName = ( SELECT FirstName FROM CUSTOMER SERVICE WHERE EmployeeID = @csEmployeeID) ;
+		SET @CSEmailAddress = ( SELECT EmailAddress FROM CUSTOMERSERVICE WHERE EmployeeID = @csEmployeeID) ;
+		SET @CSName = ( SELECT FirstName FROM CUSTOMERSERVICE WHERE EmployeeID = @csEmployeeID) ;
 		SET @LandOwner_NINO = (SELECT lNationalInsuranceNumber FROM RegisterProperty WHERE pPropertyID = @pPropertyID;
 		SET @LOEmailAddress =  (SELECT EmailAddress FROM LandlordContact WHERE NationalInsuranceNumber = @LandOwner_NINO;
       declare @msgbody varchar(max)=
