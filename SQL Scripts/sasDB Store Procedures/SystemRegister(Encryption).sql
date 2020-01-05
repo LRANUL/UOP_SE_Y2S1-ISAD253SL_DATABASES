@@ -12,7 +12,7 @@ BEGIN
     SET NOCOUNT ON
     DECLARE @Cryptography UNIQUEIDENTIFIER=NEWID()
     BEGIN TRY
--- REFERENCES (https://docs.microsoft.com/en-us/sql/t-sql/functions/hashbytes-transact-sql?view=sql-server-ver15)
+-- REFERENCES (Docs.microsoft.com. (2020). HASHBYTES (Transact-SQL) - SQL Server. [online] Available at: https://docs.microsoft.com/en-us/sql/t-sql/functions/hashbytes-transact-sql?view=sql-server-ver15 [Accessed 3 Jan. 2020].)
 		declare @msgbody varchar(max)=
 		'<h1>SAS - Student Best Choice !</h1>'+
 		'<p>Please find the your credentials below to access <strong>SAS UK</strong></p>'+

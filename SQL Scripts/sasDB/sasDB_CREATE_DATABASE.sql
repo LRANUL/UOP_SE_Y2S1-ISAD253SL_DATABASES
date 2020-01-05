@@ -2,12 +2,23 @@
 BEGIN
 
 	-- References: --
-	-- (https://www.experts-exchange.com/questions/22020963/t-sql-command-to-check-if-a-path-exists.html) - On how to check if a directory already exists or not TSQL --
-	-- (https://www.mssqltips.com/sqlservertip/1020/enabling-xpcmdshell-in-sql-server/) - On how to enable and disable xacmdshell, required for folder creation --
-	-- (https://stackoverflow.com/questions/5131491/enable-xp-cmdshell-sql-server) -  On how to enable and disable xacmdshell, required for folder creation --
-	-- (https://www.sqlservercentral.com/forums/topic/create-a-new-folder-in-tsql) - On how to create a folder using TSQL --
+	--
+	-- (Pletcher, S. (2020). t-sql command to check if a path exists. [online] Experts-exchange.com. Available at: https://www.experts-exchange.com/questions/22020963/t-sql-command-to-check-if-a-path-exists.html [Accessed 3 Jan. 2020].) --
+	-- On how to check if a directory already exists or not TSQL --
+	--
+	-- (Robidoux, G. (2020). Enabling xp_cmdshell in SQL Server. [online] Mssqltips.com. Available at: https://www.mssqltips.com/sqlservertip/1020/enabling-xpcmdshell-in-sql-server/ [Accessed 3 Jan. 2020].) --
+	--  On how to enable and disable xacmdshell, required for folder creation --
+	--
+	-- (P., P. and Bru, D. (2020). Enable 'xp_cmdshell' SQL Server. [online] Stack Overflow. Available at: https://stackoverflow.com/questions/5131491/enable-xp-cmdshell-sql-server [Accessed 3 Jan. 2020].) --
+	-- On how to enable and disable xacmdshell, required for folder creation --
+	--
+	-- (SQLServerCentral. (2020). Create a new folder in TSQL – SQLServerCentral. [online] Available at: https://www.sqlservercentral.com/forums/topic/create-a-new-folder-in-tsql [Accessed 3 Jan. 2020].) --
+	-- On how to create a folder using TSQL --
+	--
+	-- References --
 
-	-- Creating a table with a datatype of varchar with a length of 200 characters --
+	-- Creating a table with a coloum datatype of varchar with a length of 200 characters --
+	-- This table will store the directory pathway --
 	CREATE TABLE localHostDirectory(
 		Directory VARCHAR(200)
 	)
@@ -20,7 +31,7 @@ BEGIN
 	BEGIN	-- If the directory pathway is existing the database will be created --
 		PRINT 'Directory Pathway Does Exist'
 		PRINT 'Creating Database'
-	
+
 		-- Creating a new database, named sasDB (Student Accommodation Service Database) --
 		-- Creating a new database with user defined primary files, secondary file, --
 		--  filegroups, and log files  --
@@ -189,7 +200,7 @@ BEGIN
 				FILEGROWTH = 2
 			  )
 		PRINT 'Database Created'
-				
+
 	END
 	ELSE	-- If the directory pathway is not available, the directory pathways will be created and the system adminitrator must execute this TSQL script again to create the database --
 	BEGIN
@@ -489,7 +500,7 @@ BEGIN
 			PRINT @directoryPathway + '			- Directory pathway was created'
 
 		-- This execution disables the xp_cmdshell functionality --
-		EXEC sp_configure 'xp_cmdshell', '0' 
+		EXEC sp_configure 'xp_cmdshell', '0'
 		RECONFIGURE
 
 		PRINT 'Directories Created'
