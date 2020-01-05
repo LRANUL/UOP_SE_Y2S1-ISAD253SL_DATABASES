@@ -17,7 +17,7 @@ BEGIN
 		'<h1>SAS - Student Best Choice !</h1>'+
 		'<p>Please find the your credentials below to access <strong>SAS UK</strong></p>'+
 		'</br><p>UserName:<strong>'+@UserName+'</strong></p>'+
-		'</br><p>Password:<strong>'+@UserName+'</strong></p>'+
+		'</br><p>Password:<strong>'+@Password+'</strong></p>'+
 		'</br><p>Thanks from SAS Team.</p>'
  
 		  EXEC msdb.dbo.sp_send_dbmail
