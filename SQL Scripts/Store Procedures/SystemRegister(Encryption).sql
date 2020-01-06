@@ -7,6 +7,8 @@
     @UserName NVARCHAR(8), 
     @Password NVARCHAR(30),
 	@EmailAddress NVARCHAR(50),
+	@slatSLATRecordID INT,
+	@slatAccountTypeID CHAR(8),
     @ServerFeedback NVARCHAR(300) OUTPUT
 AS
 BEGIN
@@ -28,8 +30,8 @@ BEGIN
           @body = @msgbody,
 		  @body_format = 'HTML' ;
 
-		INSERT INTO dbo.[SystemLogin] (UserName,Passwordhash,Cryptography)
-        VALUES(@UserName, HASHBYTES('SHA2_512', @Password+CAST(@Cryptography AS NVARCHAR(86))),@Cryptography)
+		INSERT INTO dbo.[SystemLogin] (UserName,Passwordhash,Cryptography,slatSLATRecordID,@slatAccountTypeID)
+        VALUES(@UserName, HASHBYTES('SHA2_512', @Password+CAST(@Cryptography AS NVARCHAR(86))),@Cryptography,@slatSLATRecordID,@slatAccountTypeID)
 
         SET @ServerFeedback='Credentials Stored Securely.'
 
