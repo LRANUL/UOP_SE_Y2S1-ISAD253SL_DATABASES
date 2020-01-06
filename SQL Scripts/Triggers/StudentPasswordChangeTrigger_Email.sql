@@ -4,11 +4,11 @@ THIS WILL ALERT THE REGISTERED STUDENT WITH QUICK EMAIL TO HIS ACCOUNT WITH REFE
 NEW PASSWORD DETAILS CAN ALSO BE FORWARDED BUT FOR SECURITY REASONS THIS WAS NOT IMPLEMENTED.
 */
 
-CREATE TRIGGER PasswordUpdate on [SystemLogin]
-AFTER Update 
+CREATE TRIGGER stPasswordUpdate on [SystemLogin]
+AFTER Update
 AS
 BEGIN
-DECLARE 
+DECLARE
 @SystemLoginID Char(8),
 @UserName varchar(8),
 @Passwordhash Binary(64),
@@ -19,7 +19,7 @@ DECLARE
 SELECT @SystemLoginID = ins.SystemLoginID FROM INSERTED ins;
 SELECT @Passwordhash = ins.Passwordhash FROM INSERTED ins;
 SELECT @UserName = ins.UserName FROM INSERTED ins;
-     
+
 
 IF UPDATE(Passwordhash)
 BEGIN
