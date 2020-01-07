@@ -1,12 +1,15 @@
+
  ALTER TABLE dbo.[SystemLogin] ADD Cryptography UNIQUEIDENTIFIER 
  
  GO
  
  CREATE PROCEDURE dbo.spSystemRegister
-    @UserName VARCHAR(8), 
-    @Password VARCHAR(30),
-	@EmailAddress VARCHAR(50),
-    @ServerFeedback VARCHAR(300) OUTPUT
+    @UserName NVARCHAR(8), 
+    @Password NVARCHAR(30),
+	@EmailAddress NVARCHAR(50),
+	@slatSLATRecordID INT,
+	@slatAccountTypeID CHAR(8),
+    @ServerFeedback NVARCHAR(300) OUTPUT
 AS
 BEGIN
     SET NOCOUNT ON
@@ -19,7 +22,7 @@ BEGIN
 		'</br><p>UserName:<strong>'+@UserName+'</strong></p>'+
 		'</br><p>Password:<strong>'+@Password+'</strong></p>'+
 		'</br><p>Thanks from SAS Team.</p>'
- 
+ -- Message body content for demostration of procedure only, doesn't not represent any type organisation body.
 		  EXEC msdb.dbo.sp_send_dbmail
           @profile_name = 'SASMAIL',
           @recipients = @EmailAddress,
@@ -27,8 +30,8 @@ BEGIN
           @body = @msgbody,
 		  @body_format = 'HTML' ;
 
-		INSERT INTO dbo.[SystemLogin] (UserName,Passwordhash,Cryptography)
-        VALUES(@UserName, HASHBYTES('SHA2_512', @Password+CAST(@Cryptography AS NVARCHAR(86))),@Cryptography)
+		INSERT INTO dbo.[SystemLogin] (UserName,Passwordhash,Cryptography,slatSLATRecordID,@slatAccountTypeID)
+        VALUES(@UserName, HASHBYTES('SHA2_512', @Password+CAST(@Cryptography AS NVARCHAR(86))),@Cryptography,@slatSLATRecordID,@slatAccountTypeID)
 
         SET @ServerFeedback='Credentials Stored Securely.'
 
